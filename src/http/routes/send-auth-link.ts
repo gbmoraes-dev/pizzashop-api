@@ -33,7 +33,7 @@ export const sendAuthLink = new Elysia().post(
 		const authLink = new URL('/auth-link/authenticate', env.API_BASE_URL)
 
 		authLink.searchParams.set('code', code)
-		authLink.searchParams.set('redirect', env.AUTH_REDIRECT_URL)
+		authLink.searchParams.set('redirect_url', env.AUTH_REDIRECT_URL)
 
 		console.log(authLink.toString())
 	},
