@@ -1,4 +1,4 @@
-import Elysia, { Cookie, t } from 'elysia'
+import Elysia from 'elysia'
 
 import { env } from '@/env'
 
@@ -7,6 +7,7 @@ import { registerRestaurant } from '@/http/routes/register-restaurants'
 import { sendAuthLink } from '@/http/routes/send-auth-link'
 import { authenticateFromLink } from '@/http/routes/authenticate-from-link'
 import { signOut } from '@/http/routes/sign-out'
+import { getProfile } from '@/http/routes/get-profile'
 
 export const app = new Elysia()
 	.use(authenticate)
@@ -14,6 +15,7 @@ export const app = new Elysia()
 	.use(sendAuthLink)
 	.use(authenticateFromLink)
 	.use(signOut)
+	.use(getProfile)
 
 app.listen(env.PORT, () => {
 	console.log(`🔥 HTTP Server is running on port ${env.PORT}`)
