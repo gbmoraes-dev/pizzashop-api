@@ -4,6 +4,7 @@ import { env } from '@/env'
 
 import { authenticate } from '@/http/authenticate'
 import { registerRestaurant } from '@/http/routes/register-restaurants'
+import { registerCustomer } from '@/http/routes/register-customer'
 import { sendAuthLink } from '@/http/routes/send-auth-link'
 import { authenticateFromLink } from '@/http/routes/authenticate-from-link'
 import { signOut } from '@/http/routes/sign-out'
@@ -13,6 +14,7 @@ import { getManagedRestaurant } from '@/http/routes/get-managed-restaurant'
 export const app = new Elysia()
 	.use(authenticate)
 	.use(registerRestaurant)
+	.use(registerCustomer)
 	.use(sendAuthLink)
 	.use(authenticateFromLink)
 	.use(signOut)
