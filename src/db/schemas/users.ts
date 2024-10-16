@@ -1,6 +1,10 @@
+import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+
+import { relations } from 'drizzle-orm'
+
 import { createId } from '@paralleldrive/cuid2'
 
-import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { orders } from '@/db/schemas'
 
 export const userRoleEnum = pgEnum('user_role', ['manager', 'customer'])
 
@@ -15,3 +19,7 @@ export const users = pgTable('users', {
 	createdAt: timestamp('created_at').defaultNow(),
 	updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+export const usersRelations = relations(users, ({ many }) => ({
+	orders: many(orders),
+}))
