@@ -6,23 +6,23 @@ import { errors } from '@/http/errors'
 
 import { authenticate } from '@/http/authenticate'
 
-import { NotAManagerError } from '@/http/errors/not-a-manager-error'
+import { ContentNotFoundError } from '../errors/content-not-found-error'
 
 export const getManagedRestaurant = new Elysia()
 	.use(errors)
 	.use(authenticate)
-	.get('/managed-restaurant', async ({ getCurrentUser }) => {
-		const { restaurantId } = await getCurrentUser()
-
-		if (!restaurantId) {
-			throw new NotAManagerError()
-		}
+	.get('/managed-restaurant', async ({ getManagedRestaurantId }) => {
+		const restaurantId = await getManagedRestaurantId()
 
 		const managedRestaurant = await db.query.restaurants.findFirst({
 			where(fields, { eq }) {
 				return eq(fields.id, restaurantId)
 			},
 		})
+
+		if (!managedRestaurant) {
+			throw new ContentNotFoundError()
+		}
 
 		return managedRestaurant
 	})

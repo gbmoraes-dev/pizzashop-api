@@ -2,7 +2,7 @@ import Elysia from 'elysia'
 
 import { UnauthorizedError } from '@/http/errors/unauthorized-error'
 import { NotAManagerError } from '@/http/errors//not-a-manager-error'
-import { ContentNotFoundError } from '@/http/errors/not-found-error'
+import { ContentNotFoundError } from '@/http/errors/content-not-found-error'
 import { LinkExpiredError } from '@/http/errors/link-expired-error'
 import { EmailAlreadyExistsError } from '@/http/errors/email-already-exists-error'
 

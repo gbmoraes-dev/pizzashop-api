@@ -12,7 +12,7 @@ import { authLinks } from '@/db/schemas'
 
 import { errors } from '@/http/errors'
 
-import { ContentNotFoundError } from '@/http/errors/not-found-error'
+import { ContentNotFoundError } from '@/http/errors/content-not-found-error'
 
 import { mail } from '@/lib/mail'
 

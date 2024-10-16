@@ -12,7 +12,7 @@ import { errors } from '@/http/errors'
 
 import { authenticate } from '@/http/authenticate'
 
-import { ContentNotFoundError } from '@/http/errors/not-found-error'
+import { ContentNotFoundError } from '@/http/errors/content-not-found-error'
 import { LinkExpiredError } from '@/http/errors/link-expired-error'
 
 export const authenticateFromLink = new Elysia()

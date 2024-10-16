@@ -7,6 +7,7 @@ import { env } from '@/env'
 import { errors } from '@/http/errors'
 
 import { UnauthorizedError } from '@/http/errors/unauthorized-error'
+import { NotAManagerError } from '@/http/errors/not-a-manager-error'
 
 const jwtPayloadSchema = t.Object({
 	sub: t.String(),
@@ -47,6 +48,19 @@ export const authenticate = new Elysia()
 					sub: payload.sub,
 					restaurantId: payload.restaurantId,
 				}
+			},
+		}
+	})
+	.derive({ as: 'scoped' }, ({ getCurrentUser }) => {
+		return {
+			getManagedRestaurantId: async () => {
+				const { restaurantId } = await getCurrentUser()
+
+				if (!restaurantId) {
+					throw new NotAManagerError()
+				}
+
+				return restaurantId
 			},
 		}
 	})
