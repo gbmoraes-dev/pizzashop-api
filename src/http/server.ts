@@ -15,6 +15,7 @@ import { updateRestaurant } from '@/http/routes/update-restaurant'
 import { createMenu } from '@/http/routes/create-menu'
 import { getMenu } from '@/http/routes/get-menu'
 import { updateMenu } from '@/http/routes/update-menu'
+import { createOrder } from '@/http/routes/create-order'
 
 export const app = new Elysia()
 	.use(authenticate)
@@ -30,6 +31,7 @@ export const app = new Elysia()
 	.use(createMenu)
 	.use(getMenu)
 	.use(updateMenu)
+	.use(createOrder)
 	.onError(({ error, code, set }) => {
 		switch (code) {
 			case 'VALIDATION':
