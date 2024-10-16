@@ -4,7 +4,11 @@ import { db } from '@/db/connection'
 
 import { restaurants, users } from '@/db/schemas'
 
-export const registerRestaurant = new Elysia().post(
+import { errors } from '@/http/errors'
+
+import { EmailAlreadyExistsError } from '@/http/errors/email-already-exists-error'
+
+export const registerRestaurant = new Elysia().use(errors).post(
 	'/restaurants',
 	async ({ body, set }) => {
 		const {
@@ -14,6 +18,16 @@ export const registerRestaurant = new Elysia().post(
 			managerEmail,
 			managerPhone,
 		} = body
+
+		const emailAlreadyExists = await db.query.users.findFirst({
+			where(fields, { eq }) {
+				return eq(fields.email, managerEmail)
+			},
+		})
+
+		if (emailAlreadyExists) {
+			throw new EmailAlreadyExistsError()
+		}
 
 		const [manager] = await db
 			.insert(users)

@@ -1,8 +1,15 @@
 import Elysia from 'elysia'
-import { authenticate } from '@/http/authenticate'
+
 import { db } from '@/db/connection'
 
+import { errors } from '@/http/errors'
+
+import { authenticate } from '@/http/authenticate'
+
+import { UnauthorizedError } from '@/http/errors/unauthorized-error'
+
 export const getProfile = new Elysia()
+	.use(errors)
 	.use(authenticate)
 	.get('/me', async ({ getCurrentUser }) => {
 		const { sub: userId } = await getCurrentUser()
@@ -14,7 +21,7 @@ export const getProfile = new Elysia()
 		})
 
 		if (!user) {
-			throw new Error('User not found.')
+			throw new UnauthorizedError()
 		}
 
 		return user

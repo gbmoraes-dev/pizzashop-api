@@ -1,16 +1,21 @@
 import Elysia from 'elysia'
 
-import { authenticate } from '@/http/authenticate'
-
 import { db } from '@/db/connection'
 
+import { errors } from '@/http/errors'
+
+import { authenticate } from '@/http/authenticate'
+
+import { NotAManagerError } from '@/http/errors/not-a-manager-error'
+
 export const getManagedRestaurant = new Elysia()
+	.use(errors)
 	.use(authenticate)
 	.get('/managed-restaurant', async ({ getCurrentUser }) => {
 		const { restaurantId } = await getCurrentUser()
 
 		if (!restaurantId) {
-			throw new Error('User is not a manager.')
+			throw new NotAManagerError()
 		}
 
 		const managedRestaurant = await db.query.restaurants.findFirst({

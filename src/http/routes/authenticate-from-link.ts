@@ -8,46 +8,54 @@ import { db } from '@/db/connection'
 
 import { authLinks } from '@/db/schemas'
 
+import { errors } from '@/http/errors'
+
 import { authenticate } from '@/http/authenticate'
 
-export const authenticateFromLink = new Elysia().use(authenticate).get(
-	'/auth-link/authenticate',
-	async ({ query, signUser, redirect }) => {
-		const { code, redirect_url } = query
+import { ContentNotFoundError } from '@/http/errors/not-found-error'
+import { LinkExpiredError } from '@/http/errors/link-expired-error'
 
-		const authLinkFromCode = await db.query.authLinks.findFirst({
-			where(fields, { eq }) {
-				return eq(fields.code, code)
-			},
-		})
+export const authenticateFromLink = new Elysia()
+	.use(errors)
+	.use(authenticate)
+	.get(
+		'/auth-link/authenticate',
+		async ({ query, signUser, redirect }) => {
+			const { code, redirect_url } = query
 
-		if (!authLinkFromCode) {
-			throw new Error('Authentication link not found.')
-		}
+			const authLinkFromCode = await db.query.authLinks.findFirst({
+				where(fields, { eq }) {
+					return eq(fields.code, code)
+				},
+			})
 
-		if (dayjs().diff(authLinkFromCode.createdAt, 'days') > 7) {
-			throw new Error('Authentication link expired, please generate a new one.')
-		}
+			if (!authLinkFromCode) {
+				throw new ContentNotFoundError()
+			}
 
-		const managedRestaurant = await db.query.restaurants.findFirst({
-			where(fields, { eq }) {
-				return eq(fields.managerId, authLinkFromCode.userId)
-			},
-		})
+			if (dayjs().diff(authLinkFromCode.createdAt, 'days') > 7) {
+				throw new LinkExpiredError()
+			}
 
-		await signUser({
-			sub: authLinkFromCode.userId,
-			restaurantId: managedRestaurant?.id,
-		})
+			const managedRestaurant = await db.query.restaurants.findFirst({
+				where(fields, { eq }) {
+					return eq(fields.managerId, authLinkFromCode.userId)
+				},
+			})
 
-		await db.delete(authLinks).where(eq(authLinks.code, code))
+			await signUser({
+				sub: authLinkFromCode.userId,
+				restaurantId: managedRestaurant?.id,
+			})
 
-		// return redirect(redirect_url)
-	},
-	{
-		query: t.Object({
-			code: t.String(),
-			redirect_url: t.String(),
-		}),
-	},
-)
+			await db.delete(authLinks).where(eq(authLinks.code, code))
+
+			// return redirect(redirect_url)
+		},
+		{
+			query: t.Object({
+				code: t.String(),
+				redirect_url: t.String(),
+			}),
+		},
+	)

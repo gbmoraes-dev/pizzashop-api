@@ -8,7 +8,11 @@ import { db } from '@/db/connection'
 
 import { authLinks } from '@/db/schemas'
 
-export const sendAuthLink = new Elysia().post(
+import { errors } from '@/http/errors'
+
+import { ContentNotFoundError } from '@/http/errors/not-found-error'
+
+export const sendAuthLink = new Elysia().use(errors).post(
 	'/authenticate',
 	async ({ body }) => {
 		const { email } = body
@@ -20,7 +24,7 @@ export const sendAuthLink = new Elysia().post(
 		})
 
 		if (!user) {
-			throw new Error('User not found.')
+			throw new ContentNotFoundError()
 		}
 
 		const code = createId()

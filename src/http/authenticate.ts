@@ -4,12 +4,17 @@ import jwt from '@elysiajs/jwt'
 
 import { env } from '@/env'
 
+import { errors } from '@/http/errors'
+
+import { UnauthorizedError } from '@/http/errors/unauthorized-error'
+
 const jwtPayloadSchema = t.Object({
 	sub: t.String(),
 	restaurantId: t.Optional(t.String()),
 })
 
 export const authenticate = new Elysia()
+	.use(errors)
 	.use(
 		jwt({
 			secret: env.JWT_SECRET,
@@ -35,7 +40,7 @@ export const authenticate = new Elysia()
 				const payload = await verify(auth.value)
 
 				if (!payload) {
-					throw new Error('Unauthorized.')
+					throw new UnauthorizedError()
 				}
 
 				return {
